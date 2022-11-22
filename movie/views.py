@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from django.http import Http404
 from .models import Movie
 from .serializers import MovieSerializer
@@ -20,3 +21,15 @@ class MovieList(APIView):
         serializer.is_valid()
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class MovieDetail(APIView):
+
+    def get(self, request, pk):
+       requested_movie = get_object_or_404(Movie, pk=pk)
+       serializer = MovieSerializer(requested_movie)
+       return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request, pk):
+        requested_movie = get_object_or_404(Movie, pk=pk)
+        requested_movie.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
